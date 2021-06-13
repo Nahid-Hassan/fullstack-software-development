@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ajax, Retrieve Data From Dogs API</title>
+  </head>
+  <body>
+    <h2>Doggos</h2>
+    <div class="doggos">
+      <button class="add-doggo">Add New Doggo</button>
+    </div>
+    <br>
+
+    <script>
+      const DOG_URL = "https://dog.ceo/api/breeds/image/random";
+      const doggos = document.querySelector(".doggos");
+
+      function addNewDoggos() {
+        const promise = fetch(DOG_URL);
+        promise
+          .then(function (response) {
+            const processingPromise = response.json();
+            return processingPromise;
+          })
+          .then(function (processingResponse) {
+            //   console.log(processingResponse);
+            const img = document.createElement("img");
+            img.className = 'loading';
+            img.src = processingResponse.message;
+            img.alt = "Cute doggo";
+            doggos.appendChild(img);
+          });
+      }
+      document.querySelector('.add-doggo').addEventListener('click', addNewDoggos)
+    </script>
+  </body>
+</html>

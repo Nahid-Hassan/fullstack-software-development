@@ -1,0 +1,87 @@
+<body>
+  <style>
+    .box-1 {
+      border: 1px solid black;
+      color: white;
+      background-color: blue;
+      height: 150px;
+      width: 300px;
+    }
+    .box-2 {
+      border: 1px solid black;
+      color: white;
+      background-color: red;
+      height: 100px;
+      width: 300px;
+    }
+    .box-3 {
+      border: 1px solid black;
+      color: white;
+      background-color: green;
+      height: 200px;
+      width: 100px;
+    }
+
+    /* display flex */
+    .flex-container {
+      /* flex-inline */
+      display: flex;
+      width: 100%;
+      border: 1px solid black;
+    }
+    /* flex-direction */
+    .reverse {
+      /* column-reverse, column */
+      flex-direction: row;
+    }
+    /* justify-content */
+    .jc {
+      /* default: flex-start */
+      /* other: center, flex-end, space-between, space-around */
+      justify-content: space-around;
+    }
+    /* align-items */
+    .ai {
+      /* flex-end, flex-start, center */
+      align-items: center;
+      height: 250;
+    }
+
+    /* remove the height from the three boxes */
+    .no-height {
+      /* 
+      height: 100% will match the height of the element's parent, regardless of the parent's height value.
+
+      height: inherit will, as the name implies, inherit the value from it's parent. If the parent's value is height: 50%, then the child will also be 50% of the height of it's parent. If the parent's size is defined in absolute values (e.g. height: 50px), then height: inherit and height: 100% will have the same behavior for the child.
+       */
+      height: inherit;
+    }
+
+
+    /* higher order push right 
+     * if you use row-reverse or column reverse as direction than 
+     * higher order push left. 
+    */
+    .box-2 {
+      align-self: end;
+      order: 5;
+    }
+
+    .box-1 {
+      align-self: end;
+      order: 4;
+    }
+
+    .box-3 {
+      align-self: end;
+      order: 3;
+    }
+
+  </style>
+
+  <div class="flex-container ai jc reverse">
+    <div class="box box-1">Box-1</div>
+    <div class="box box-2">Box-2</div>
+    <div class="box box-3">Box-3</div>
+  </div>
+</body>
