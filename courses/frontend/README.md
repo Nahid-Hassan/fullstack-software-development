@@ -11,7 +11,7 @@
 
 | H          | T        | M     | L      | Tag     |
 | ---------- | -------- | ----- | ------ | ------- |
-| div        | section  | form  | input  | table   |
+| `div`      | section  | form  | input  | table   |
 | header     | footer   | aside | nav    | option  |
 | optgroup   | progress | meter | map    | img     |
 | heading    | p        | a     | list   | marquee |
@@ -19,3 +19,12 @@
 | blockquote | code     | pre   | button | embed   |
 
 ### CSS Properties You Must Know
+
+| C                | S                | S         | P            |
+| ---------------- | ---------------- | --------- | ------------ |
+| float            | position         | margin    | padding      |
+| background-image | display          | width     | height       |
+| color            | background-color | min-width | min-height   |
+| max-width        | max-height       | border    | border-color |
+| border-style     | border-width     | font      | font-family  |
+| font-weight      | z-index          |           |              |
