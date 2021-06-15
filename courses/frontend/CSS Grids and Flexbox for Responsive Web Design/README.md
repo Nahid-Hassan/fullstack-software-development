@@ -232,3 +232,5 @@ clear: left/right/both;
 | ![images](images/10.png) | ![images](images/8.png) | ![images](images/9.png) |
 
 #### Float Exercise 
+
+![images](images/border-box.png)
