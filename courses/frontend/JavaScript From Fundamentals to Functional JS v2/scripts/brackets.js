@@ -4,10 +4,9 @@ let who = person.name;
 person[10] = "I am a student.";
 
 console.log(person["10"]); //  "I am a student."
-console.log(person[10]); // "I am a student."
+console.log(person[10]); // "I am a"
 
-
-console.log(person[]);
+console.log(person);
 // [ <10 empty items>, 'I am a student.', name: 'Md. Nahid Hassan' ]
 
 let age = "age";
