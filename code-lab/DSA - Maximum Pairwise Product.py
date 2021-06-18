@@ -3,7 +3,7 @@ def naive_solution(nums):
     maximum_pairwise_product = 0
     # store total numbers length
     l = len(nums)
-    
+
     # if num is not empty
     if nums:
         for i in range(l):
@@ -15,6 +15,7 @@ def naive_solution(nums):
         # if nums is null return 0
         return 0
     return maximum_pairwise_product
+
 
 def optimized_solution(nums):
     l = len(nums)
@@ -30,7 +31,7 @@ def optimized_solution(nums):
     max_idx2 = -1
     for j in range(l):
         # (nums[j] != nums[max_idx1]) -> ensure present number is not equal to past number
-        if (nums[j] != nums[max_idx1]) and ((max_idx2 == -1) or nums[j] > nums[max_idx2]):
+        if (j != max_idx1) and ((max_idx2 == -1) or nums[j] > nums[max_idx2]):
             max_idx2 = j
 
     # now return the maximum pairwise product
@@ -47,6 +48,7 @@ def main():
     # optimized solution output
     maximum_pairwise_product = optimized_solution(nums)
     print(maximum_pairwise_product)
+
 
 if __name__ == "__main__":
     main()
