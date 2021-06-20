@@ -9,6 +9,9 @@
       - [Sum of Two Digits](#sum-of-two-digits)
       - [Maximum Pairwise Product](#maximum-pairwise-product)
       - [Solving the Maximum Pairwise Product Programming Challenge: Improving the Naive Solution, Testing, Debugging](#solving-the-maximum-pairwise-product-programming-challenge-improving-the-naive-solution-testing-debugging)
+    - [Algorithmic Warm-up](#algorithmic-warm-up)
+      - [Fibonacci Numbers](#fibonacci-numbers)
+      - [Greatest Common Divisors](#greatest-common-divisors)
 
 ### Programming Challenges
 
@@ -172,3 +175,62 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+
+### Algorithmic Warm-up
+
+Please Read: `./resources/1-intro-1-whystudyalgorithms.pdf`
+
+#### Fibonacci Numbers
+
+Please Read: `./resources/1-intro-2-fibonaccinumbers.pdf`
+
+```py
+import random
+import math
+
+
+def fibonacci_recursive(n):
+    if n <= 1:
+        return n
+
+    return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2)
+
+
+def fibonacci_iterative(n):
+    fib = [0, 1]
+    for i in range(2, n+1):
+        fib.append(fib[i-1]+fib[i-2])
+
+    return fib[n]
+
+
+def fibonacci_formula(n):
+    root_5 = math.sqrt(5.0)
+
+    return (1 / root_5) * ((((1 + root_5) / 2) ** n) - (((1 - root_5) / 2) ** n))
+
+
+def main():
+    # stress test
+    for _ in range(10):
+        n = random.randint(1, 20)
+
+        recursive = fibonacci_recursive(n)
+        iterative = fibonacci_iterative(n)
+        method = fibonacci_formula(n - 1)
+
+        print(n, '---->', math.floor(method))
+
+        if recursive != iterative:
+            print(
+                f'Wrong Answer: recursive = {recursive}, iterative = {iterative}.')
+        else:
+            print('Ok')
+
+
+if __name__ == "__main__":
+    main()
+
+```
+
+#### Greatest Common Divisors
