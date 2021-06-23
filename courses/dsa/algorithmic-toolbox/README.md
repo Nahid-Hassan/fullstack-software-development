@@ -12,6 +12,8 @@
     - [Algorithmic Warm-up](#algorithmic-warm-up)
       - [Fibonacci Numbers](#fibonacci-numbers)
       - [Greatest Common Divisors](#greatest-common-divisors)
+      - [Big-O Notation](#big-o-notation)
+    - [Greedy Algorithms](#greedy-algorithms)
 
 ### Programming Challenges
 
@@ -117,7 +119,7 @@ def maximum_pairwise_product(nums):
             for j in range(i + 1, len(nums)):
                 prod = nums[i] * nums[j]
                 if maximum_pairwise_product < prod:
-                    maximum_pairwise_product = prod 
+                    maximum_pairwise_product = prod
     else:
         return 0
     return maximum_pairwise_product
@@ -234,3 +236,53 @@ if __name__ == "__main__":
 ```
 
 #### Greatest Common Divisors
+
+![images](./images/1.png)
+
+```py
+# Naive Algorithm
+def gcd_naive(a, b):
+    mx = max(a, b)
+
+    gcd = 1
+    for i in range(2, mx):
+        if a % i == 0 and b % i == 0:
+            gcd = i
+    return gcd
+
+# GCD Euclid
+def gcd_euclid(a, b):
+    """
+    10) 15 (1
+       10
+    --------
+        5) 10 (2
+           10
+        --------
+            0
+    GCD = 5
+    """
+    if b == 0:
+        return a
+    else:
+        return gcd_euclid(b, a % b)
+```
+
+#### Big-O Notation
+
+**Computing Runtimes** `./resources/1-intro-4-1-runtimes.pdf`
+
+**Asymptotic Notation**  `./resources/1-intro-4-2-asymptoticnotation1.pdf`   
+
+![images](./images/2.png)
+
+**Big-O Notation**: `./resources/1-intro-4-2-asymptoticnotation2.pdf`
+
+**Using Big-O**: `./resources/1-intro-4-2-asymptoticnotation3.pdf`
+
+![images](images/4.png)
+
+![images](images/3.png)
+
+### Greedy Algorithms
+

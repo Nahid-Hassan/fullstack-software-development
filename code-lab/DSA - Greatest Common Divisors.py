@@ -2,6 +2,7 @@ import time
 import math
 import random
 
+
 def gcd_naive(a, b):
     mx = max(a, b)
 
@@ -27,11 +28,29 @@ def gcd_naive_3(a, b):
             gcd = i
     return gcd
 
+
+def gcd_euclid(a, b):
+    """
+    10) 15 (1
+       10
+    --------
+        5) 10 (2
+           10
+        --------
+            0
+    GCD = 5
+    """
+    if b == 0:
+        return a
+    else:
+        return gcd_euclid(b, a % b)
+
+
 def main():
 
-    for i in range(10):
-        a = random.randint(1,10000)
-        b = random.randint(1,10000)
+    for _ in range(10):
+        a = random.randint(1, 10000)
+        b = random.randint(1, 10000)
         start_time = time.time()
         gcd_naive(a, b)
         print("--- %s seconds 1---" % (time.time() - start_time))
@@ -45,5 +64,7 @@ def main():
         print("--- %s seconds 3---" % (time.time() - start_time))
 
         print("-------------------------------------------------")
+
+
 if __name__ == "__main__":
     main()
