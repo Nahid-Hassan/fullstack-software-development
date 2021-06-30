@@ -14,6 +14,8 @@
       - [Greatest Common Divisors](#greatest-common-divisors)
       - [Big-O Notation](#big-o-notation)
     - [Greedy Algorithms](#greedy-algorithms)
+      - [Largest Numbers](#largest-numbers)
+      - [Car Fueling](#car-fueling)
 
 ### Programming Challenges
 
@@ -286,3 +288,101 @@ def gcd_euclid(a, b):
 
 ### Greedy Algorithms
 
+#### Largest Numbers
+
+What is the largest number that consists of digits `3, 9, 5, 9, 7, 1`? Use all the digits. 
+
+Examples: `359179`, `537991`, `913579`,...
+
+![images](images/5.png)
+
+```js
+def largest_number_greedy(nums):
+    res = []
+    for _ in range(len(nums)):
+        mx = max(nums)
+        res.append(mx)
+        nums.remove(mx)
+    return ''.join([str(x) for x in res])
+
+
+def lexicographical_large_number(nums):
+    print(nums)
+    temp = [str(num) for num in nums]
+    res = []
+
+    for _ in range(len(temp)):
+        mx = max(temp)
+        print(mx)
+        res.append(mx)
+        temp.remove(mx)
+    return res
+
+
+def main():
+    nums = [8, 1, 9, 3, 2]
+    large_number = largest_number_greedy(nums.copy())
+    print(large_number)
+    print(nums)
+    large_number = lexicographical_large_number(nums)
+    print(large_number)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+#### Car Fueling
+
+![images](images/6.png)
+
+![images](images/7.png)
+
+![images](images/8.png)
+
+![images](images/9.png)
+
+```py
+# store the gas station
+# here 0 value is the start point
+# 200, 375, 550, 750 is the gas station 
+# 950 is the end point
+gas_stations = [0, 200, 375, 550, 750, 950]
+# number of miles crossed when it is tank is full
+distance_with_full_tank = 400
+
+
+def min_refills(gas_stations, n, distance_with_full_tank):
+    """
+        Take the gas staions, number of gas station and distance crossed with full tank
+        Return the number of minimum refills and gas station index
+    """
+    # store current refills
+    current_refill = 0
+    # store the solution
+    nums_of_refills = 0
+    gas_stations_idx = []
+
+    # Since current refill is less than gas station number
+    while current_refill <= n:
+        # make last refill to current refill
+        last_refill = current_refill
+        
+        while current_refill <= n and gas_stations[current_refill + 1] - gas_stations[last_refill] <= distance_with_full_tank:
+            print(gas_stations[current_refill + 1] - gas_stations[last_refill])
+            current_refill += 1
+
+        if current_refill == last_refill:
+            return "IMPOSABLE"
+        if current_refill <= n:
+            gas_stations_idx.append(current_refill)
+            nums_of_refills += 1
+
+    return nums_of_refills, gas_stations_idx
+
+
+out = min_refills(gas_stations, len(gas_stations) - 2, distance_with_full_tank)
+print(out[1])
+```
+
+![images](images/10.png)
