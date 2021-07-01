@@ -16,6 +16,9 @@
     - [Floats](#floats)
       - [Overview of Floats](#overview-of-floats)
       - [Float Exercise](#float-exercise)
+    - [Flexbox](#flexbox)
+      - [Introducing Flexbox](#introducing-flexbox)
+      - [Flex Snippets/ Properties](#flex-snippets-properties)
 
 ### Introduction to Setup
 
@@ -231,6 +234,51 @@ clear: left/right/both;
 | ------------------------ | ----------------------- | ----------------------- |
 | ![images](images/10.png) | ![images](images/8.png) | ![images](images/9.png) |
 
-#### Float Exercise 
+#### Float Exercise
 
 ![images](images/border-box.png)
+
+### Flexbox
+
+#### Introducing Flexbox
+
+![images](images/11.png)
+
+![images](images/12.png)
+
+#### Flex Snippets/ Properties
+
+```css
+ul {
+  display: -webkit-flex; /* target chrome, Safari */
+  display: -ms-flexbox; /* target IE10 */
+  display: flex;
+}
+```
+
+**flex-direction**: `row(default)`, `row-reverse`, `column`, `column-reverse`
+
+| Where    | Snippets                          | Output                   |
+| -------- | --------------------------------- | ------------------------ |
+|          | `Initial`                         | ![images](images/13.png) |
+| `parent` | `display: flex;`                  | ![images](images/14.png) |
+| `parent` | `flex-direction: column;`         | ![images](images/15.png) |
+| `parent` | `flex-direction: column-reverse;` | ![images](images/16.png) |
+| `parent` | `flex-direction: row-reverse;`    | ![images](images/17.png) |
+
+**flex-wrap**: `wrap`, `wrap-reverse`, `nowrap(default)`
+
+| Where    | Snippets                   | Output                   |
+| -------- | -------------------------- | ------------------------ |
+| `parent` | `flex-wrap: wrap;`         | ![images](images/18.png) |
+| `parent` | `flex-wrap: nowrap;`       | ![images](images/19.png) |
+| `parent` | `flex-wrap: wrap-reverse;` | ![images](images/20.png) |
+
+**flex-flow**:
+
+> **flex-flow**: `flex-direction` `flex-wrap`.
+> **flex-flow** is the **shorthand** for both `flex-direction` and `flex-wrap`
+
+| Where    | Snippets                       | Output                   |
+| -------- | ------------------------------ | ------------------------ |
+| `parent` | `flex-flow: row wrap-reverse;` | ![images](images/21.png) |
