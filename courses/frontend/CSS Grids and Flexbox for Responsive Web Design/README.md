@@ -19,6 +19,8 @@
     - [Flexbox](#flexbox)
       - [Introducing Flexbox](#introducing-flexbox)
       - [Flex Snippets/ Properties](#flex-snippets-properties)
+      - [Flexbox Justification](#flexbox-justification)
+      - [Flexbox Alignment](#flexbox-alignment)
 
 ### Introduction to Setup
 
@@ -256,6 +258,8 @@ ul {
 }
 ```
 
+![images](./images/22.png)
+
 **flex-direction**: `row(default)`, `row-reverse`, `column`, `column-reverse`
 
 | Where    | Snippets                          | Output                   |
@@ -282,3 +286,29 @@ ul {
 | Where    | Snippets                       | Output                   |
 | -------- | ------------------------------ | ------------------------ |
 | `parent` | `flex-flow: row wrap-reverse;` | ![images](images/21.png) |
+
+#### Flexbox Justification
+
+**justify-content**: `flex-start`, `flex-end`, `center`, `space-between`, `space-around`, `space-evenly`
+
+| Where    | Snippets                          | Output                   |
+| -------- | --------------------------------- | ------------------------ |
+| `parent` | `justify-content: flex-end;`      | ![images](images/23.png) |
+| `parent` | `justify-content: flex-start;`    | ![images](images/24.png) |
+| `parent` | `justify-content: center;`        | ![images](images/25.png) |
+| `parent` | `justify-content: space-around;`  | ![images](images/26.png) |
+| `parent` | `justify-content: space-between;` | ![images](images/27.png) |
+| `parent` | `justify-content: space-evenly;`  | ![images](images/28.png) |
+
+#### Flexbox Alignment
+
+**align-items**: `flex-start`, `flex-end`, `center`, `baseline`, `stretch(default)`
+
+| Where    | Snippets                   | Output                   |
+| -------- | -------------------------- | ------------------------ |
+|          | `Initial`                  | ![images](images/29.png) |
+| `parent` | `align-items: flex-start;` | ![images](images/30.png) |
+| `parent` | `align-items: flex-start;` | ![images](images/31.png) |
+| `parent` | `align-items: center;`     | ![images](images/32.png) |
+| `parent` | `align-items: baseline;`   | ![images](images/33.png) |
+| `parent` | `align-items: stretch;`    | ![images](images/34.png) |
