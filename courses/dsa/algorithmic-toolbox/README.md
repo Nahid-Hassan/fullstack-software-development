@@ -16,6 +16,7 @@
     - [Greedy Algorithms](#greedy-algorithms)
       - [Largest Numbers](#largest-numbers)
       - [Car Fueling](#car-fueling)
+      - [Grouping Children](#grouping-children)
 
 ### Programming Challenges
 
@@ -274,7 +275,7 @@ def gcd_euclid(a, b):
 
 **Computing Runtimes** `./resources/1-intro-4-1-runtimes.pdf`
 
-**Asymptotic Notation**  `./resources/1-intro-4-2-asymptoticnotation1.pdf`   
+**Asymptotic Notation** `./resources/1-intro-4-2-asymptoticnotation1.pdf`
 
 ![images](./images/2.png)
 
@@ -290,7 +291,7 @@ def gcd_euclid(a, b):
 
 #### Largest Numbers
 
-What is the largest number that consists of digits `3, 9, 5, 9, 7, 1`? Use all the digits. 
+What is the largest number that consists of digits `3, 9, 5, 9, 7, 1`? Use all the digits.
 
 Examples: `359179`, `537991`, `913579`,...
 
@@ -345,7 +346,7 @@ if __name__ == "__main__":
 ```py
 # store the gas station
 # here 0 value is the start point
-# 200, 375, 550, 750 is the gas station 
+# 200, 375, 550, 750 is the gas station
 # 950 is the end point
 gas_stations = [0, 200, 375, 550, 750, 950]
 # number of miles crossed when it is tank is full
@@ -354,7 +355,7 @@ distance_with_full_tank = 400
 
 def min_refills(gas_stations, n, distance_with_full_tank):
     """
-        Take the gas staions, number of gas station and distance crossed with full tank
+        Take the gas stations, number of gas station and distance crossed with full tank
         Return the number of minimum refills and gas station index
     """
     # store current refills
@@ -367,7 +368,7 @@ def min_refills(gas_stations, n, distance_with_full_tank):
     while current_refill <= n:
         # make last refill to current refill
         last_refill = current_refill
-        
+
         while current_refill <= n and gas_stations[current_refill + 1] - gas_stations[last_refill] <= distance_with_full_tank:
             print(gas_stations[current_refill + 1] - gas_stations[last_refill])
             current_refill += 1
@@ -386,3 +387,47 @@ print(out[1])
 ```
 
 ![images](images/10.png)
+
+#### Grouping Children
+
+**Problem**: Many children came to a celebration. Organize them into the minimum possible number of groups such that the age of any two children in the same group differ by at most one year.
+
+![images](./images/11.png)
+![images](./images/12.png)
+
+```py
+children_ages = [3.2, 3.2, 3.3, 3.8, 4.6, 5.0]
+
+def points_cover_sorted(points: list) -> set:
+    """
+        Grouping Children:
+
+        For 4 children of ages 3 years 2 months, 3 years 8 months, 4
+        years 6 months and 5 years, what is the smallest number of such
+        groups that for any two children in the same group their ages
+        differ by at most one year?
+
+        We can assume 3 year 2 months => 3.2, 3 year 8 month => 3.8 and
+        set it on the line.
+                3.2  3.8
+        |--------|----|------------------------------------
+    """
+    points.sort()
+
+    result = []
+    i = 0
+    while i < len(points):
+        point = points[i]
+        temp = []
+        temp.append(point)
+        i += 1
+        while i < len(points) and (point + 1.0) >= points[i]:
+            temp.append(points[i])
+            i += 1
+        result.append(temp)
+    return result
+
+out = points_cover_sorted(children_ages)
+print(out)
+print(len(out))
+```
