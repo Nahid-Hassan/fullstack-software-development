@@ -21,6 +21,9 @@
       - [Flex Snippets/ Properties](#flex-snippets-properties)
       - [Flexbox Justification](#flexbox-justification)
       - [Flexbox Alignment](#flexbox-alignment)
+      - [Individuals flex-items](#individuals-flex-items)
+      - [All Flex Properties](#all-flex-properties)
+      - [Flexbox Grid](#flexbox-grid)
 
 ### Introduction to Setup
 
@@ -312,3 +315,61 @@ ul {
 | `parent` | `align-items: center;`     | ![images](images/32.png) |
 | `parent` | `align-items: baseline;`   | ![images](images/33.png) |
 | `parent` | `align-items: stretch;`    | ![images](images/34.png) |
+
+#### Individuals flex-items
+
+**order**:
+
+By default every elements **order** is `1`. If you change the order greater than 1, then it pushed down the element on bottom of the stack.
+
+```css
+.flex2 {
+  border: 2px dashed darkblue;
+  order: 2; /* other values is 0,1,2,3,4,5*/
+  /* higher order means pushed down it below on the stack */
+}
+```
+
+**flex-grow, flex-shrink, flex-basis**:
+
+`flex` is the shorthand for `flex-grow`, `flex-shrink` and `flex-basis`
+
+```css
+.flex2 {
+  /* `flex` is the shorthand for `flex-grow`, `flex-shrink` and `flex-basis`
+ */
+  /* GSB (0 1 auto) default for flex;*/
+  /* flex: 3 5 25%; */
+  flex: 0 1 25%;
+}
+```
+
+For visualize how `flexbox` work. Play those games,
+
+1. [Flexbox Froggy for learn CSS Flexbox](https://flexboxfroggy.com/)
+2. [Flexbox Defense](http://www.flexboxdefense.com/)
+
+#### All Flex Properties
+
+[CSS Tricks Flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
+
+```css
+display: flex;
+```
+
+| Where    | Property          | Value                                                                               |
+| -------- | ----------------- | ----------------------------------------------------------------------------------- |
+| _Parent_ | `flex-direction`  | `row`, `row-reverse`, `column`, `column-reverse`                                    |
+| _Parent_ | `flex-wrap`       | `wrap`, `nowrap`, `wrap-reverse`                                                    |
+| _Parent_ | `flex-flow`:      | **Shorthand** for `flex-direction` and `flex-wrap`                                  |
+| _Parent_ | `justify-content` | `flex-start`, `flex-end`, `center`, `space-between`, `space-around`, `space-evenly` |
+| _Parent_ | `align-items`     | `flex-start`, `flex-end`, `center`, `stretch`, `baseline`                           |
+| _Parent_ | `align-contents`  | `flex-start`, `flex-end`, `center`, `space-between`, `space-around`, `space-evenly` |
+| _Child_  | `order`           | `1(default)`, `<integer both positive and negative)>`                               |
+| _Child_  | `flex-basis`      | `25%`, `3rem`, `auto` etc.                                                          |
+| _Child_  | `flex-shrink`     | `<integer>`                                                                         |
+| _Child_  | `flex-grow`       | `<integer>`                                                                         |
+| _Child_  | `flex`            | **Shorthand** for `flex-grow`, `flex-shrink`, `flex-basis`                          |
+| _Child_  | `flex-self`       | `flex-start`, `flex-end`, `center`, `stretch`, `baseline`                           |
+
+#### Flexbox Grid
