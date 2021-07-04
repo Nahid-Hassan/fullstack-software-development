@@ -17,6 +17,10 @@
       - [Largest Numbers](#largest-numbers)
       - [Car Fueling](#car-fueling)
       - [Grouping Children](#grouping-children)
+      - [Long Hike (Fractional Knapsack)](#long-hike-fractional-knapsack)
+    - [Divide-and-Conquer](#divide-and-conquer)
+      - [Linear Search](#linear-search)
+      - [Binary Search](#binary-search)
 
 ### Programming Challenges
 
@@ -431,3 +435,123 @@ out = points_cover_sorted(children_ages)
 print(out)
 print(len(out))
 ```
+
+#### Long Hike (Fractional Knapsack)
+
+![images](images/13.png)
+![images](images/14.png)
+![images](images/15.png)
+
+```py
+# Next day it will be solved.
+```
+
+### Divide-and-Conquer
+
+- Break into non-overlapping subproblems of the same type
+- Solve subproblems
+- Combine results
+
+#### Linear Search
+
+**Searching** in an **unsorted** array using **linear** search.
+
+![images](images/16.png)
+
+```py
+def linear_search_iterative(elements, key):
+    """
+        An index, i, where A[i] = k.
+        If there is no such i, then
+        NOT_FOUND.
+    """
+    for idx, value in enumerate(elements):
+        if key == value:
+            return idx
+    return "Not Found"
+
+
+def linear_search_recursive(elements, low, high, key):
+    if high < low:
+        return "Not Found"
+
+    if elements[low] == key:
+        return low
+
+    return linear_search_recursive(elements, low + 1, high, key)
+
+
+def main():
+    elements = ['nahid', 'hassan', 'mahin', 'mony', 'joe', 'doe']
+    out = linear_search_iterative(elements, 'mahin')
+    print(out)
+    out = linear_search_recursive(elements, 0, len(elements)-1, 'mahin')
+    print(out)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+#### Binary Search
+
+**Iterative Method**:
+
+```py
+def binary_search_iterative(elements, key):
+    low = 0
+    high = len(elements) - 1
+
+    while low <= high:
+        mid = (low + high) // 2
+        if elements[mid] == key:
+            # wow! found, return the mid
+            return mid
+        elif elements[mid] < key:
+            # change low
+            low = mid + 1
+        else:
+            # change high
+            high = mid - 1
+    return low - 1
+
+# test program
+elements = [3, 4, 4, 8, 10, 10, 14, 20, 34]
+out = binary_search_iterative(elements, 30)
+print(out) # 7
+```
+
+**Recursive Method**:
+
+![images](images/17.png)
+![images](images/18.png)
+![images](images/19.png)
+![images](images/20.png)
+
+
+```py
+def binary_search_recursive(elements, low, high, key):
+    if high < low:
+        return low - 1
+
+    mid = int(low + ((high - low) / 2))
+    if key == elements[mid]:
+        return mid
+    elif key < elements[mid]:
+        return binary_search_recursive(elements, low, mid-1, key)
+    else:
+        return binary_search_recursive(elements, mid+1, high, key)
+
+
+elements = [3, 4, 4, 8, 10, 10, 14, 20, 34]
+out = binary_search_recursive(elements, 0, len(elements) - 1, 30)
+print(out) # 7
+```
+
+**Summary binary search**:
+
+- Break problem into non-overlapping subproblems of the same type.
+- Recursively solve those subproblems.
+- Combine results of subproblems.
+
+> The **runtime** of binary search is **O(log N)** log base 2
