@@ -22,6 +22,8 @@
       - [Linear Search](#linear-search)
       - [Binary Search](#binary-search)
       - [Polynomial Multiplication](#polynomial-multiplication)
+      - [Karastuba Algorithm for Faster Multiplication](#karastuba-algorithm-for-faster-multiplication)
+      - [Selection Sort](#selection-sort)
 
 ### Programming Challenges
 
@@ -576,3 +578,40 @@ def polynomial_multiplication_naive(a, b, n):
 
     return product
 ```
+
+#### Karastuba Algorithm for Faster Multiplication
+
+> Later I added the concept and code for karastuba algorithm.
+
+#### Selection Sort
+
+![images](./images/21.png)
+![images](./images/22.png)
+
+```py
+elements = [8, 4, 2, 5, 2]
+
+
+def selection_sort(elements):
+    n = len(elements)
+
+    for i in range(n):
+        min_idx = i
+        for j in range(i + 1, n):
+            # find the index
+            if elements[j] < elements[min_idx]:
+                min_idx = j
+        # swap between index i value and min_idx value
+        elements[min_idx], elements[i] = elements[i], elements[min_idx]
+
+    return elements
+
+out = selection_sort(elements)
+print(out)
+```
+
+**Summary**:
+
+- Selection sort is an easy to implement algorithm with running time **O(n2)**.
+- **Sorts in place**: requires a constant amount of extra memory.
+- There are many other **quadratic** time sorting algorithms: e.g., `insertion sort`, `bubble sort`
