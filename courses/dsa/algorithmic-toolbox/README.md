@@ -21,6 +21,7 @@
     - [Divide-and-Conquer](#divide-and-conquer)
       - [Linear Search](#linear-search)
       - [Binary Search](#binary-search)
+      - [Polynomial Multiplication](#polynomial-multiplication)
 
 ### Programming Challenges
 
@@ -528,7 +529,6 @@ print(out) # 7
 ![images](images/19.png)
 ![images](images/20.png)
 
-
 ```py
 def binary_search_recursive(elements, low, high, key):
     if high < low:
@@ -555,3 +555,24 @@ print(out) # 7
 - Combine results of subproblems.
 
 > The **runtime** of binary search is **O(log N)** log base 2
+
+#### Polynomial Multiplication
+
+```py
+n = 3
+a = (3, 2, 5)
+b = (5, 1, 2)
+
+# result
+# c = [15, 13, 33, 9, 10]
+
+
+def polynomial_multiplication_naive(a, b, n):
+    product = [0] * (2*n - 1)
+
+    for i in range(n):
+        for j in range(n):
+            product[i+j] = product[i+j] + a[i] * b[j]
+
+    return product
+```
