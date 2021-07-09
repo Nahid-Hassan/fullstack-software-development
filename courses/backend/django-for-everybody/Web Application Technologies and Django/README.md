@@ -5,16 +5,17 @@
 - [Web Application Technologies and Django](#web-application-technologies-and-django)
   - [Table of Contents](#table-of-contents)
     - [Introduction to Dynamic Web Content](#introduction-to-dynamic-web-content)
-    - [Network Sockets and Connections](#network-sockets-and-connections)
-    - [HyperText Transfer Protocol](#hypertext-transfer-protocol)
-    - [Building a very Simple Web Browser in Python](#building-a-very-simple-web-browser-in-python)
-    - [Building a Simple HTTP Server in Python](#building-a-simple-http-server-in-python)
+      - [Network Sockets and Connections](#network-sockets-and-connections)
+      - [HyperText Transfer Protocol](#hypertext-transfer-protocol)
+      - [Building a very Simple Web Browser in Python](#building-a-very-simple-web-browser-in-python)
+      - [Building a Simple HTTP Server in Python](#building-a-simple-http-server-in-python)
+    - [Installing Django on PythonAnywhere](#installing-django-on-pythonanywhere)
 
 ### Introduction to Dynamic Web Content
 
 ![images](images/1.png)
 
-### Network Sockets and Connections
+#### Network Sockets and Connections
 
 ![images](images/2.png)
 
@@ -33,7 +34,7 @@
 | `Personal Mail Box` | `109`       |
 | `Personal Mail Box` | `110`       |
 
-### HyperText Transfer Protocol
+#### HyperText Transfer Protocol
 
 HyperText Transfer Protocol(**HTTP**) is the `protocol` that **browsers** use to talk to **servers**.
 
@@ -67,7 +68,7 @@ Other Protocol:
 
 ![images](images/making-http-request.png)
 
-### Building a very Simple Web Browser in Python
+#### Building a very Simple Web Browser in Python
 
 1. **Import** library
 
@@ -124,4 +125,15 @@ while True:
 mysocket.close()
 ```
 
-### Building a Simple HTTP Server in Python
+#### Building a Simple HTTP Server in Python
+
+### Installing Django on PythonAnywhere
+
+The following materials may be helpful to you as you review this week's lectures and content.
+
+- The [PythonAnywhere](https://www.pythonanywhere.com/user/DevCoders/) website will be used throughout the course to build out web sites and submit them for grading.
+- You will use this [Writing Your First Django App, Part I](https://docs.djangoproject.com/en/3.0/intro/tutorial01/) tutorial from Django's documentation to complete the assignment and some quiz answers may also come from this site.
+
+**Resources you might find useful / interesting**:
+
+- [Following the official Django Tutorial on PythonAnywhere](https://help.pythonanywhere.com/pages/FollowingTheDjangoTutorial/) serves as a companion guide to the previous tutorial. This tutorial is for Django 2 and the course uses Django 3 - but the process to install is similar and there is some useful information on this page.
