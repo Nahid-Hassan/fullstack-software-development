@@ -24,6 +24,7 @@
       - [Individuals flex-items](#individuals-flex-items)
       - [All Flex Properties](#all-flex-properties)
       - [Flexbox Grid](#flexbox-grid)
+    - [Responsive Images](#responsive-images)
 
 ### Introduction to Setup
 
@@ -373,3 +374,5 @@ display: flex;
 | _Child_  | `flex-self`       | `flex-start`, `flex-end`, `center`, `stretch`, `baseline`                           |
 
 #### Flexbox Grid
+
+### Responsive Images
