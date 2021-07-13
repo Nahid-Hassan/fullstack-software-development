@@ -12,6 +12,13 @@
       - [Hello World Application](#hello-world-application)
       - [Create an app](#create-an-app)
       - [Views and URLConfs](#views-and-urlconfs)
+      - [Deploy on Github](#deploy-on-github)
+      - [Pages App](#pages-app)
+      - [Templates](#templates)
+      - [Class-Based View](#class-based-view)
+      - [URLs](#urls)
+      - [Extending Templates](#extending-templates)
+      - [Tests](#tests)
 
 ### Django for Beginners
 
@@ -354,7 +361,7 @@ We have all the code we need now! To confirm everything works as expected, resta
 our Django server:
 
 ```bash
-$ ls 
+$ ls
 db.sqlite3  helloworld_project	manage.py  pages  Pipfile  Pipfile.lock
 $ python manage.py runserver
 # ...........
@@ -367,3 +374,342 @@ If you visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) you should see the
 Starting development server at http://127.0.0.1:8000/.
 
 ![images](images/helloworld.png)
+
+#### Deploy on Github
+
+```bash
+$ git init
+$ git status
+# .... some output ......
+$ git add --all
+# .... some output ......
+$ git commit -m 'initial message'
+# .... some output ......
+$ git push
+```
+
+#### Pages App
+
+Here we’ll **build**, **test**, and **deploy** a Pages app that has a `homepage` and an
+`about` page. Later We’ll also learn about Django’s **class-based views** and **templates** which are
+the building blocks for the more complex web applications built later on this README.md file.
+
+The whole task we done before here...
+
+```bash
+$ cd ~/Desktop
+$ mkdir pages
+$ cd pages
+$ pipenv install django
+$ pipenv shell
+(pages) $ django-admin startproject pages_project .
+(pages) $ python manage.py startapp pages
+```
+
+Update `helloworld_project/settings.py` and run a **runserver** command and we see the output like that:
+
+![images](./images/django-default.png)
+
+#### Templates
+
+**App Level**:
+
+Every web framework needs a convenient way to `generate HTML files`. In Django, the approach is to use templates so that individual HTML files can be served by a view to a web page specified by the **URL**.
+
+It’s worth repeating this pattern since you’ll see it over and over again in Django
+development: **Templates, Views, and URLs**. The order in which you create them
+doesn’t much matter since all three are required and work closely together.
+
+- The `URLs` control the `initial route`, the `entry point into a page, such as /about` ,
+- The `views` contain the `logic` or the “what”, and
+- The `template` has the `HTML`.
+
+For web pages that rely on a **database model**, it is the view that does much of the work to decide what data is
+available to the template.
+
+So: `Templates, Views, URLs`. This pattern will hold true for every Django web page
+you make. However it will take some repetition before you internalize it.
+Ok, moving on.
+
+The question of where to place the templates directory can be
+confusing for beginners. By default, Django looks within each app for templates. In our
+pages app it will expect a index.html template to be located in the following location:
+
+```bash
+$ mkdir templates/pages
+$ touch templates/pages/index.html
+
+$ tree templates/
+templates/
+└── pages
+    └── index.html
+```
+
+This means we would need to create a new templates directory, a new directory with
+the name of the app, pages , and finally our template itself which is index.html .
+A common question is: Why this repetitive structure? The short answer is that the
+Django template loader wants to be really sure it find the correct template and this is
+how it’s programmed to look for them.
+
+```html
+<!-- pages/index.html -->
+<h1>Index Pages</h1>
+```
+
+**Project Level**:
+
+And that is to instead create a single, project-level templates directory
+that is available to all apps.
+
+This is the approach we’ll use. By making a small tweak to our settings.py file we can tell Django to also look in this project-level folder for templates.
+
+```bash
+$ ls
+db.sqlite3  helloworld_project	manage.py  pages  Pipfile  Pipfile.lock
+$ mkdir templates
+$ touch templates/home.html
+$ ls
+db.sqlite3  helloworld_project	manage.py  pages  Pipfile  Pipfile.lock  templates
+$ ls templates
+home.html
+```
+
+Next we need to update settings.py to tell Django to look at the project-level for
+templates. This is a one-line change to the setting 'DIRS' under TEMPLATES .
+Code
+
+```py
+# pages_project/settings.py
+TEMPLATES = [
+    {
+    # ...
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+    # ...
+    },
+]
+```
+
+Then we can add a simple headline to our `home.html` file.
+
+```html
+<!-- templates/home.html -->
+<h1>Homepage.</h1>
+```
+
+Ok, our **template is complete**! The next step is to configure our **url** and **view**.
+
+#### Class-Based View
+
+Early versions of Django only shipped with function-based views, but developers soon
+found themselves repeating the same patterns over and over again. Write a view that
+lists all objects in a model. Write a view that displays only one detailed item from a
+model. And so on.
+
+Function-based generic views were introduced to abstract these patterns and stream-
+line development of common patterns. However `there was no easy way to extend or customize these views`.
+As a result, Django introduced `class-based generic views` that
+make it easy to use and also extend views covering common use cases.
+
+In our view we’ll use the built-in **TemplateView** to `display` our **template**. Update the
+`pages/views.py` file.
+
+```py
+# pages/views.py
+from django.views.generic import TemplateView
+
+# Using project level templates
+class HomePageView(TemplateView):
+    # must defined "template_name"
+    template_name = 'home.html'
+
+# using app level templates
+class IndexPageView(TemplateView):
+    template_name = 'pages/index.html'
+```
+
+Note that we’ve capitalized our view since it’s now a Python class. Classes, unlike
+functions, should always be capitalized. The **TemplateView** already contains all the
+logic needed to display our template, we just need to specify the **template’s name**.
+
+#### URLs
+
+The last step is to update our **URLConfs**. Recall from Chapter 2 that we need to make
+updates in `two locations`. First we update the project-level urls.py file to point at our
+pages app and then within pages we match the views to routes.
+
+Let’s start with the `project-level urls.py` file.
+
+```py
+# pages_project/urls.py
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('pages.urls')),
+]
+```
+
+Secondly edit the `pages/urls.py` file.
+
+```py
+# pages/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # for class based view use .as_view()
+    path('', views.HomePageView.as_view(), name='home'),
+    path('', views.IndexPageView.as_view(), name='index'),
+]
+```
+
+This pattern is almost identical to what we did in Chapter 2 with one major difference.
+When using Class-Based Views, `you always add as_view() at the end of the view name`.
+And we’re done! If you start up the web server with python manage.py runserver and
+navigate to http://127.0.0.1:8000/home/ you can see our new homepage. And
+navigate to http://127.0.0.1:8000/index/ you can see our new new index page.
+
+```bash
+$ python manage.py runserver
+```
+
+**Note**:
+
+If we create same name template file like home.html in two different place.
+
+> `project/templates/pages/home.html` and `app/templates/pages/home.html` then ... **project-level** `home.html` template is called.
+
+> If `project level` template is **deleted** then `application level` template is called.
+
+#### Extending Templates
+
+The real power of templates is their `ability to be extended`. If you think about most web
+sites, there is content that is repeated on every page (**header**, **footer**, etc). Wouldn’t it
+be nice if we, as developers, could have one canonical place for our header code that
+would be inherited by all other templates?
+
+Well we can! Let’s create a `base.html` file containing a header with links to our two
+pages.
+
+```bash
+$ touch templates/base.html
+```
+
+Django has a minimal templating language for adding links and basic logic in our
+templates. You can see the full list of built-in template tags here in the official
+docs. Template tags take the form of `{% something %}` where the “something” is the
+template tag itself. You can even create your own **custom template** tags.
+
+To add URL links in our project we can use the built-in url template tag which takes
+the URL pattern name as an argument. Remember how we added `optional URL names to our url routers`?
+This is why. The url tag uses these names to automatically create links for us.
+The URL route for our homepage is called home therefore to configure a link to it we
+would use the following: `{% url 'home' %}` .
+
+```html
+<!-- templates/base.html -->
+<header>
+  <a href="{% url 'home' %}">Home</a> | <a href="{% url 'index' %}">Index</a>
+</header>
+
+<!-- block content are inherited by child template -->
+{% block content %}
+<!-- child template code -->
+{% endblock %}
+```
+
+At the bottom we’ve added a block tag called content . Blocks can be overwritten by
+child templates via inheritance.
+
+> **Note**: You can create multiple content block in one single template.
+
+Let’s update our `home.html` and `index.html` to extend the base.html template. That
+means we can reuse the same code from one template in another template. The
+Django templating language comes with an extends method that we can use for this.
+
+```html
+<!-- apps/templates/app/index.html -->
+{% extends 'base.html' %} {% block content %}
+<h1>pages/index.html</h1>
+{% endblock %}
+```
+
+and,
+
+```html
+<!-- project/templates/home.html -->
+{% extends 'base.html' %} {% block content %}
+<h1>pages/index.html</h1>
+{% endblock %}
+```
+
+Now if you start up the server with python manage.py runserver and open up our
+webpages again at http://127.0.0.1:8000/ and http://127.0.0.1:8000/about you’ll see
+the header is magically included in both locations.
+
+Nice, right?
+
+|                               |                              |
+| ----------------------------- | ---------------------------- |
+| ![images](./images/index.png) | ![images](./images/home.png) |
+
+#### Tests
+
+Finally we come to tests. Even in an application this basic, it’s important to add tests
+and get in the habit of always adding them to our Django projects. In the words of
+**Jacob Kaplan-Moss**, one of Django’s original creators, **“Code without tests is broken as designed.”**
+
+Writing tests is important because it automates the process of confirming that the
+code works as expected. In an app like this one, we can manually look and see that
+the home page and about page exist and contain the intended content. But as a Django project grows in size there can be hundreds if not thousands of individual web pages
+and the idea of manually going throw each page is not possible. Further, whenever
+we make changes to the code–adding new features, updating existing ones, deleting
+unused areas of the site–we want to be sure that we have not inadvertently broken
+some other piece of the site. Automated tests let us write one time how we expect a
+specific piece of our project to behave and then let the computer do the checking for
+us.
+
+Fortunately Django comes with robust, `built-in testing tools` for writing and running
+tests.
+If you look within our pages app, Django already provided a `tests.py` file we can use.
+
+Open it and add the following code:
+
+```py
+from django.http import response
+from django.test import TestCase, SimpleTestCase
+
+
+# Create your tests here.
+class SimpleTest(SimpleTestCase):
+    def test_home_page_status_code(self):
+        response = self.client.get('/home/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_index_page_status_code(self):
+        response = self.client.get("/index/")
+        self.assertEqual(response.status_code, 200)
+```
+
+We’re using `SimpleTestCase` here since we `aren’t using a database`. If we were using
+a `database`, we’d instead use `TestCase`. Then we perform a check if the status code for each page is 200, which is the standard response for a successful HTTP request.
+That’s a fancy way of saying it ensures that a given webpage actually exists, but says
+nothing about the content of said page.
+
+To run the tests quit the server Control-c and type `python manage.py test` on the
+command line:
+
+```bash
+$ python manage.py test
+System check identified no issues (0 silenced).
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.016s
+
+OK
+```
+
+Success! We’ll do much more with `testing in the future, especially once we start working with databases`.
+For now, it’s important to see how easy it is to add tests
+each and every time we add new functionality to our Django project.
