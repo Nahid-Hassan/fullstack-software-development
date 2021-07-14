@@ -31,6 +31,7 @@
       - [Adding Test in MB Project](#adding-test-in-mb-project)
       - [Heroku Configuration and Deploy the Message Book Application](#heroku-configuration-and-deploy-the-message-book-application)
 - [Add files into the Github](#add-files-into-the-github)
+      - [Blog App](#blog-app)
 
 ### Django for Beginners
 
@@ -1375,3 +1376,5 @@ $ heroku open
 ```
 
 ![images](images/mb_heroku.png)
+
+#### Blog App

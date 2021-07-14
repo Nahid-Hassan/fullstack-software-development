@@ -1,0 +1,13 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 19px;
+}
+
+.container {
+  border: 2px solid purple;
+  padding-left: 2%;
+}
