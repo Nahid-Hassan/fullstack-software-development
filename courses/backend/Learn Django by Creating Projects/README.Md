@@ -19,6 +19,16 @@
       - [URLs](#urls)
       - [Extending Templates](#extending-templates)
       - [Tests](#tests)
+      - [Local vs Production](#local-vs-production)
+      - [Sign Up in Heroku and Login in Heroku CLI](#sign-up-in-heroku-and-login-in-heroku-cli)
+      - [Additional Files](#additional-files)
+      - [Deploy](#deploy)
+      - [Message Board app](#message-board-app)
+      - [Creating a Database Model](#creating-a-database-model)
+      - [Activating Models](#activating-models)
+      - [Django Admin](#django-admin)
+      - [Views, Templates and URLs](#views-templates-and-urls)
+      - [Adding Test in MB Project](#adding-test-in-mb-project)
 
 ### Django for Beginners
 
@@ -713,3 +723,559 @@ OK
 Success! We’ll do much more with `testing in the future, especially once we start working with databases`.
 For now, it’s important to see how easy it is to add tests
 each and every time we add new functionality to our Django project.
+
+```bash
+$ git add --all && git commit -m 'view template and test' && git push
+```
+
+#### Local vs Production
+
+Up to this point we’ve been using Django’s own internal web server to power our
+Pages application locally on our computer. But you can’t share a localhost address
+with someone else. To make our site available on the Internet where everyone can
+see it, we need to **deploy our code to an external server** that anyone can use to see
+our site. This is called putting our code into production. Local code lives only on our
+computer; production code lives on an external server.
+There are many server providers available but we will use **Heroku** because it is free for
+small projects, widely-used, and has a relatively straightforward deployment process.
+
+#### Sign Up in Heroku and Login in Heroku CLI
+
+Go [Heroku](www.heroku.com)
+
+CLI Install and Login
+
+```bash
+$ sudo snap install heroku
+$ heroku login
+# .....log in from CLI or using browser.
+```
+
+#### Additional Files
+
+We need to make the following four changes to our Pages project so it’s ready to deploy
+online with Heroku:
+
+- update `Pipfile.lock`
+- make a new `Procfile` file
+- install `gunicorn` as our web server
+- make a `one-line change` to `settings.py` file
+
+Within your existing Pipfile specify the version of Python we’re using, which is . .
+Add these two lines at the bottom of the file.
+
+```text
+# Pipfile
+[requires]
+python_version = "3.8"
+```
+
+Then run pipenv lock to generate the appropriate Pipfile.lock .
+
+```bash
+$ pipenv lock
+```
+
+Heroku actually `looks` in our `Pipfile.lock` for information on our `virtual environment`,
+which is why we add the language setting here.
+
+Next create a **Procfile** which is specific to Heroku.
+
+```bash
+$ touch Procfile
+```
+
+Open the **Procfile** with your text editor and add the following:
+
+```py
+web: gunicorn helloworld.wsgi --log-file -
+```
+
+This says to use our existing `helloworld.wsgi` file but with **gunicorn**, `which is a web server suitable for production`, instead of Django’s own server which is only suitable
+for local development.
+
+```bash
+$ pipenv install gunicorn
+```
+
+The final step is a one-line change to `settings.py` . Scroll down to the section called
+**ALLOWED_HOSTS** and add a `'*'` so it looks as follows:
+
+```py
+# pages_project/settings.py
+ALLOWED_HOSTS = ['*']
+```
+
+Then finally add all modified and new files in github...
+
+```bash
+$ git add --all && git commit -m 'new updates for heroku deployment' && git push
+```
+
+#### Deploy
+
+- create a new app on Heroku and push our code to it
+- add a git remote “hook” for Heroku
+- configure the app to ignore static files, which we’ll cover in later chapters
+- start the Heroku server so the app is live
+- visit the app on Heroku’s provided URL
+
+**Step-1**:
+
+We can do the first step, creating a new Heroku app, from the command line with
+heroku create . Heroku will create a random name for our app, in my case `cryptic-oasis-4343`.
+Your name will be different.
+
+```bash
+$ heroku create
+# .................. creating app names cryptic-oasis-4343
+```
+
+Now we need to add a “hook” for Heroku within git. This means that git will store
+both our settings for pushing code to Bitbucket and to Heroku.
+
+```bash
+# heroku git:remote -a app_name
+$ heroku git:remote -a cryptic-oasis-4343
+```
+
+We only need to do one set of Heroku **configurations** at this point, which is to tell
+Heroku to `ignore static files like CSS and JavaScript` which Django by default tries to
+optimize for us. We’ll cover this in later chapters so for now just run the following
+command.
+
+```bash
+$ heroku config:set DISABLE_COLLECTSTATIC=1
+```
+
+Now we can push our code to Heroku. Because we set our “hook” previously, it will go
+to Heroku.
+
+```bash
+$ git push origin master
+```
+
+If we just typed git push origin master then the code is pushed to **Bitbucket**, not
+**Heroku**.
+
+Finally we need to make our Heroku app live. As websites grow in traffic they need
+additional Heroku services but for our basic example we can use the lowest level,
+`web=1` , which also happens to be free!
+
+Type the following command.
+
+```bash
+$ heroku ps:scale web=1
+```
+
+We’re done! The last step is to confirm our app is live and online. If you use the
+command heroku open your web browser will open a new tab with the URL of your
+app:
+
+```bash
+$ heroku open
+```
+
+Mine is at https://cryptic-oasis-40349.herokuapp.com/about/. You can see both the
+homepage and about page are up now.
+
+|                           |                           |
+| ------------------------- | ------------------------- |
+| ![images](./images/1.png) | ![images](./images/2.png) |
+
+```bash
+$ heroku login # login to heroku
+$ heroku create # create an application on heroku
+$ heroku git:remote -a cryptic-oasis-3334 # cryptic-oasis-3334 is the heroku application name
+$ heroku config:set DISABLE_COLLECTSTATIC=1 # 1 true, it ensure there is no static files
+$ git add --all && git commit -m 'deploy in heroku' # add and commit files
+$ git push heroku master # push to bitbucket
+$ heroku ps:scale web=1 # make website live
+$ heroku open # open the application
+```
+
+#### Message Board app
+
+Django provides built-in support for several types of database backends. With just
+a few lines in our settings.py file it can support **PostgreSQL**, **MySQL**, **Oracle**, or
+**SQLite**. But the simplest–by far–to use is **SQLite** because it runs off a single file and
+requires no complex installation.
+
+**Initial Setup**:
+
+- Create a new directory for our code on the Desktop called mb
+- Install Django in a new virtual environment
+- Create a new project called mb_project
+- Create a new app call posts
+- Update settings.py
+
+```bash
+$ cd ./projects
+$ mkdir mb
+$ cd mb
+$ pipenv install django
+$ pipenv shell
+$ django-admin startproject mb_project .
+$ python manage.py startapp posts
+$ vim mb_project/settings.py
+# .............
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'posts' # new
+]
+# .............
+```
+
+Then execute the migrate command to create an initial database based on Django’s
+default settings.
+
+```bash
+$ python manage.py migrate
+$ ls
+db.sqlite3 mb_project manage.py
+```
+
+**Aside**: Technically a `db.sqlite` file is created the first time you run either **migrate**
+or **runserver** . Using `runserver configures a database using Django’s default settings`,
+however **migrate** will sync the database with the current state of any database models
+contained in the project and listed in **INSTALLED_APPS** . In other words, to make sure
+the database reflects the current state of your project you’ll need to `run migrate` (and
+also `makemigrations` ) each time you **update** a model. More on this shortly.
+To confirm everything works correctly, spin up our local server.
+
+```bash
+$ python manage.py runserver
+```
+
+and see the result,
+
+![images](images/django-default.png)
+
+#### Creating a Database Model
+
+Our first task is to create a database model where we can store and display posts
+from our users. Django will turn this model into a database table for us. In real-world
+Django projects, it’s often the case that there will be many complex, interconnected
+database models but in our simple message board app we only need one.
+
+Open the posts/models.py file and We want to create a model to
+store the textual content of a message board post.
+
+```py
+# posts/models.py
+
+from django.db import models
+
+class Post(models.Model):
+    text = models.TextField()
+```
+
+Note that we’ve created a new database model called Post which has the database
+field text . We’ve also specified the type of content it will hold, TextField() . Django
+provides many model fields supporting common types of content such as **characters**,
+**dates**, **integers**, **emails**, and so on.
+
+#### Activating Models
+
+Now that our new model is created we need to activate it. Going forward, whenever we
+create or modify an existing model we’ll need to update Django in a two-step process.
+
+1. First we create a migration file with the makemigrations command which `generate the SQL commands` for preinstalled apps in our **INSTALLED_APPS** setting.
+   Migration files do `not execute` those commands on our database file, rather they
+   are a `reference of all new changes` to our models. This approach means that we
+   have a record of the changes to our models over time.
+1. Second we build the actual database with migrate which does **execute** the
+   **instructions in our migrations** file.
+
+```bash
+$ python manage.py makemigrations posts # specify the app name is helpful for debugging
+$ python manage.py migrate posts
+```
+
+Note that you don’t have to include a name after either makemigrations or migrate .
+If you simply run the commands then they will apply to all available changes. But it’s
+a good habit to be specific. If we had two separate apps in our project, and updated
+the models in both, and then ran makemigrations it would generate a migrations file
+containing data on both changes. This makes debugging harder in the future. You
+want each migration file to be as small and isolated as possible. That way if you need
+to look at past migrations, there is only one change per migration rather than one that
+applies to multiple apps.
+
+#### Django Admin
+
+Django provides us with a robust admin interface for interacting with our database.
+This is a truly killer feature that few web frameworks offer. It has its routes in
+Django’s origin as a project at a newspaper. The developers wanted a CMS (Content
+Management System) so that journalists could write and edit their stories without
+needing to touch “code.” Over time the built-in admin app has evolved into a fantastic,
+out-of-the-box tool for managing all aspects of a Django project.
+
+To use the Django admin, we first need to create a superuser who can login. In your
+command line console, type python manage.py createsuperuser and respond to the
+prompts for a username, email, and password:
+
+```bash
+$ python manage.py createsuperuser
+name:
+email:
+password:
+# superuser created successfully.
+```
+
+Restart the Django server with python manage.py runserver and in your browser go
+to http://127.0.0.1:8000/admin/. You should see the admin’s login screen:
+
+![images](images/admin.png)
+
+But where’s our posts app? It’s not displayed on the main admin page!
+We need to explicitly tell Django what to display in the admin. Fortunately we can
+change fix this easily by opening the posts/admin.py file and editing it to look like
+this:
+
+```py
+# posts/admin.py
+from django.contrib import admin
+from .models import Post
+admin.site.register(Post)
+```
+
+- Django now knows that it should display our posts app and its database model Post
+  on the admin page. If you refresh your browser you’ll see that it now appears:
+
+![images](images/admin1.png)
+
+- Now let’s create our first message board post for our database. Click on the + Add
+  button opposite Posts . Enter your own text in the Text form field.
+
+![images](./images/create-post.png)
+
+- Then click the “Save” button, which will redirect you to the main Post page. However
+  if you look closely, there’s a problem: our new entry is called “Post object”, which isn’t
+  very helpful.
+
+![images](/images/post-object.png)
+
+- Let’s change that. Within the posts/models.py file, add a new function `__str__` as
+  follows:
+
+```py
+from django.db import models
+
+class Post(models.Model):
+    text = models.TextField()
+
+    def __str__(self) -> str: # new portion
+        return self.text[:50]
+```
+
+![images](images/after-adding-dunder.png)
+
+#### Views, Templates and URLs
+
+In order to display our database content on our homepage, we have to wire up our
+**views**, **templates**, and **URLConfs**.
+
+Let’s begin with the view. Earlier in the book we used the built-in generic `TemplateView`
+to display a template file on our homepage. Now we want to list the contents of
+our database model. Fortunately this is also a common task in web development and
+Django comes equipped with the generic class-based `ListView`.
+
+In the `posts/views.py` file enter the Python code below:
+
+```py
+from django.views.generic import ListView
+from . import models
+
+# Create your views here.
+class HomePageView(ListView):
+    model = models.Post
+    template_name = 'posts/home.html'
+```
+
+In the first line we’re importing `ListView` and in the second line we need to `explicitly`
+define which `model` we’re using. In the view, we subclass `ListView` , specify our `model name`
+and specify our `template reference`. Internally `ListView returns an object` called
+**object_list** that we want to display in our template.
+
+Our view is complete which means we still need to configure our URLs and make
+our template. Let’s start with the template. Create a **project-level directory** called
+`templates and a home.html template file`.
+
+```bash
+$ mkdir templates/posts/
+$ touch templates/posts/home.html
+```
+
+Then update the **DIRS** field in our `settings.py` file so that Django knows to look in this
+templates folder.
+
+```py
+import os
+# .......
+# settings.py
+TEMPLATES = [
+    {
+    # ...
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+    # ...
+    },
+]
+```
+
+In our templates file `home.html` we can use the Django Templating Language’s for loop
+to list all the objects in `object_list` . Remember that object_list is what ListView
+returns to us.
+
+```html
+<!-- templates/posts/home.html -->
+<h1>Message Board Homepage</h1>
+
+<ul>
+    {% for post in object_list %}
+        <li> {{ post }} </li>
+    {% endfor %}
+</ul>
+```
+
+The last step is to set up our **URLConfs**. Let’s start with the `project-level` `urls.py` file
+where we simply `include` our posts and add include on the second line.
+
+```py
+# mb_project/urls.py
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('posts.urls')),
+]
+```
+
+Then create an app-level urls.py file.
+
+```bash
+$ touch posts/urls.py
+```
+
+Then update it look like this,
+
+```py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # we need to use as_view for class based view
+    path('', views.HomePageView.as_view(), name='home'),
+]
+```
+
+Then run the server,
+
+```bash
+$ python manage.py runserver
+```
+
+Restart the server with python manage.py runserver and navigate to our homepage
+http://127.0.0.1:8000/ which now lists out our message board posts.
+
+![images](images/posts-list-view.png)
+
+We’re basically done at this point, but `let’s create a few more message board posts` in
+the `Django admin` to confirm that they will display correctly on the homepage.
+
+Goto http://127.0.0.1:8000/admin/
+
+![images](images/admin2.png)
+
+Add some more post and see the output,
+
+![images](images/home-list.png)
+
+Add all the files into the Github.
+
+```bash
+$ git init
+$ git add --all
+$ git commit -m 'initial commit'
+```
+
+#### Adding Test in MB Project
+
+Previously we were only testing **static** pages so we used `SimpleTestCase`. But now that
+our homepage works with a **database**, we need to use `TestCase` which will let us create
+a `“test” database` we can check against. 
+
+>In other words, we don’t need to run tests on our actual database but instead can make a separate test database, fill it with sample data, and then test against it.
+
+Let’s start by adding a sample post to the text database field and then check that it
+is stored correctly in the database. It’s **important** that all our `test methods` start with
+**test_** so Django knows to test them! The code will look like this:
+
+```py
+from django.test import TestCase
+from .models import Post
+# Create your tests here.
+
+class PostModelTest(TestCase):
+
+    # not used for test
+    def setUp(self):
+        # create a simple post, text is our model field
+        Post.objects.create(text='just a test')
+    
+    # used for test because this method
+    # start with "test_something"
+    def test_text_content(self):
+        post = Post.objects.get(id=1)
+        excepted_object_name = f'{post.text}'
+        self.assertEqual(excepted_object_name, 'just a test')
+```
+
+At the top we import the **TestCase** module which lets us `create a sample database`, then
+import our `Post model`. We create a new class `PostModelTest` and add a method `setUp`
+to `create a new database` that has just one entry: a post with a text field containing
+the string `‘just a test’`.
+
+Then we run our first test, `test_text_content` , to check that the database field actually
+contains just a test . We create a variable called post that represents the first id on
+our Post model. Remember that Django `automatically sets this id for us`. If we created
+another entry it would have an id of 2, the next one would be 3, and so on.
+
+The following line uses `f strings` which are a very cool addition to Python 3.6. They
+let us put variables directly in our strings as long as the variables are surrounded by
+brackets `{}` . Here we’re setting expected_object_name to be the string of the value in
+post.text , which should be just a t
+est .
+
+On the final line we use **assertEqual** to check that our newly created entry does in
+fact match what we input at the top. Go ahead and run the test on the command line
+with `python manage.py test` .
+
+```bash
+$python manage.py test
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+OK
+Destroying test database for alias 'default'...
+```
+
+**Congratulations, It passed!**
+
+Don’t worry if the previous explanation felt like information overload. 
+`That’s natural the first time you start writing tests`, but you’ll soon find that most 
+tests that you write are actually quite **repetitive**.
+
+Time for our `second test`. The first test was on the model but now we want test our
+one and only page: the homepage. Specifically, `we want to test that it exists` (throws
+an `HTTP 200 response`), uses the `home` view, and uses the `home.html` template.
+We’ll need to add one more **import** at the top for **reverse** and a brand new class
+**HomePageViewTest** for our test.
