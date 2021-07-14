@@ -29,6 +29,8 @@
       - [Django Admin](#django-admin)
       - [Views, Templates and URLs](#views-templates-and-urls)
       - [Adding Test in MB Project](#adding-test-in-mb-project)
+      - [Heroku Configuration and Deploy the Message Book Application](#heroku-configuration-and-deploy-the-message-book-application)
+- [Add files into the Github](#add-files-into-the-github)
 
 ### Django for Beginners
 
@@ -1136,9 +1138,9 @@ returns to us.
 <h1>Message Board Homepage</h1>
 
 <ul>
-    {% for post in object_list %}
-        <li> {{ post }} </li>
-    {% endfor %}
+  {% for post in object_list %}
+  <li>{{ post }}</li>
+  {% endfor %}
 </ul>
 ```
 
@@ -1208,13 +1210,13 @@ $ git commit -m 'initial commit'
 
 Previously we were only testing **static** pages so we used `SimpleTestCase`. But now that
 our homepage works with a **database**, we need to use `TestCase` which will let us create
-a `“test” database` we can check against. 
+a `“test” database` we can check against.
 
->In other words, we don’t need to run tests on our actual database but instead can make a separate test database, fill it with sample data, and then test against it.
+> In other words, we don’t need to run tests on our actual database but instead can make a separate test database, fill it with sample data, and then test against it.
 
 Let’s start by adding a sample post to the text database field and then check that it
 is stored correctly in the database. It’s **important** that all our `test methods` start with
-**test_** so Django knows to test them! The code will look like this:
+**test\_** so Django knows to test them! The code will look like this:
 
 ```py
 from django.test import TestCase
@@ -1227,7 +1229,7 @@ class PostModelTest(TestCase):
     def setUp(self):
         # create a simple post, text is our model field
         Post.objects.create(text='just a test')
-    
+
     # used for test because this method
     # start with "test_something"
     def test_text_content(self):
@@ -1270,8 +1272,8 @@ Destroying test database for alias 'default'...
 
 **Congratulations, It passed!**
 
-Don’t worry if the previous explanation felt like information overload. 
-`That’s natural the first time you start writing tests`, but you’ll soon find that most 
+Don’t worry if the previous explanation felt like information overload.
+`That’s natural the first time you start writing tests`, but you’ll soon find that most
 tests that you write are actually quite **repetitive**.
 
 Time for our `second test`. The first test was on the model but now we want test our
@@ -1279,3 +1281,97 @@ one and only page: the homepage. Specifically, `we want to test that it exists` 
 an `HTTP 200 response`), uses the `home` view, and uses the `home.html` template.
 We’ll need to add one more **import** at the top for **reverse** and a brand new class
 **HomePageViewTest** for our test.
+
+```py
+from django.test import TestCase
+from .models import Post
+from django.urls import reverse
+
+# .....
+
+class HomePageViewTest(TestCase):
+
+    def setUp(self):
+        Post.objects.create(text='this is another test')
+
+    def test_view_url_exists_at_proper_location(self):
+        print(Post.objects.all())
+        resp = self.client.get('/')
+        self.assertEqual(resp.status_code, 200)
+
+    def test_view_url_by_name(self):
+        # reverse(optional_name) return the
+        # actual url, for current situation it is just '/'
+        resp = self.client.get(reverse('home'))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        resp = self.client.get(reverse('home'))
+        self.assertEqual(resp.status_code, 200)
+        print(resp)
+        self.assertTemplateUsed(resp, 'posts/home.html')
+```
+
+Let's run `python manage.py test`
+
+```bash
+$python manage.py test
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.<QuerySet [<Post: this is another test>]>
+.<TemplateResponse status_code=200, "text/html; charset=utf-8">
+..
+----------------------------------------------------------------------
+Ran 4 tests in 0.018s
+
+OK
+Destroying test database for alias 'default'...
+```
+
+Why does it say `four tests`? Remember that our setUp methods are not actually tests,
+they merely let us run subsequent tests. Our four actual tests are test*text_content ,
+test_view_url_exists_at_proper_location , test_view_url_by_name , and test_view*-
+uses_correct_template .
+Any function that has the word **test\*** at the beginning and exists in a tests.py file will
+be run when we execute the command `python manage.py test` .
+
+#### Heroku Configuration and Deploy the Message Book Application
+
+**Configuration**:
+
+We need to make the following changes to our Message Board project to deploy it
+online:
+- Update `Pipfile.lock` # Using `pipenv lock`
+- New `Procfile` # Add `web: gunicorn mb_project.wsgi --log-file -`
+- Install `gunicorn` # Using `pipenv install gunicorn`
+- Update `settings.py` # Make `ALLOWED_HOST = ['*']`
+
+
+# Add files into the Github
+
+```bash
+$ git init
+$ git add --all
+$ git commit -m 'new updates for deploy in heroku'
+```
+**Deploy**:
+
+```bash
+$ heroku login
+$ heroku create
+›   Warning: heroku update available from 7.56.0 to 7.56.1.
+Creating app... done, ⬢ murmuring-caverns-56652
+https://murmuring-caverns-56652.herokuapp.com/ | https://git.heroku.com/murmuring-caverns-56652.git
+# heroku git:remote -a app_name
+$ heroku git:remote -a murmuring-caverns-56652
+# disable collectstatic(because we have no static files) that makes our site faster
+$ heroku config:set DISABLE_COLLECTSTATIC=1
+# push files
+$ git push heroku master
+# make it live
+$ heroku ps:scale web=1
+# open the application in browsers
+$ heroku open
+```
+
+![images](images/mb_heroku.png)
