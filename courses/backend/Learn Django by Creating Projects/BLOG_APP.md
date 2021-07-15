@@ -16,6 +16,8 @@ works with static files.
     - [Views](#views)
     - [Templates](#templates)
     - [Static Files](#static-files)
+    - [Individual Blog Pages](#individual-blog-pages)
+    - [Tests](#tests)
 
 ### Initial Setup
 
@@ -342,17 +344,304 @@ What should we put in our file? How about changing the title to be purple?
 
 ```py
 # blog_project/settings.py
-header h1 {
-    color: purple;
+header h1 a{
+    color: red;
 }
 ```
 
-Last step now. We need to add the `static files` to our `templates` by adding 
+Last step now. We need to add the `static files` to our `templates` by adding
 `{% load staticfiles %}` to the top of `base.html` . Because our other templates inherit from
 base.html we only have to add this once. Include a new line at the bottom of the
 `<head></head>` code that `explicitly references` our new `base.css` file.
 
 ```html
 <!-- project/templates/blog/base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'blog/css/base.css' %}" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:stylesheet"
+    />
+    <title>Django Blog</title>
+  </head>
+  <body>
+    <header>
+      <h1><a href="/">Django Blog</a></h1>
+    </header>
 
+    <div class="container">{% block content %} {% endblock content %}</div>
+  </body>
+</html>
+```
+
+Start up the server again with python manage.py runserver and look at our updated
+homepage at http://127.0.0.1:8000/.
+
+![images](images/red.png)
+
+Add more style...
+
+```css
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 19px;
+}
+
+header {
+  border-bottom: 1px solid #999;
+  margin-bottom: 2rem;
+  display: flex;
+}
+
+header h1 a {
+  color: red;
+  text-decoration: none;
+}
+
+.nav-left {
+  margin-right: auto;
+}
+
+.nav-right {
+  display: flex;
+  padding-top: 2rem;
+}
+
+.post-entry h2 {
+  margin: 0.5rem 0;
+}
+
+.post-entry h2 a,
+.post-entry h2 a:visited {
+  color: blue;
+  text-decoration: none;
+}
+
+.post-entry p {
+  margin: 0;
+  font-weight: 400;
+}
+
+.post-entry h2 a:hover {
+  color: red;
+}
+```
+
+Refresh the homepage at http://localhost:8000/ and you should see the following.
+
+![images](images/blog-after-style.png)
+
+### Individual Blog Pages
+
+Now we can add the functionality for individual blog pages. How do we do that?
+We need to create a new `view, url, and template`. I hope you’re noticing a pattern
+in development with Django now!
+
+Start with the view. We can use the generic class-based **DetailView** to simplify things.
+At the top of the file add DetailView to the list of imports and then create our new
+view called **BlogDetailView** .
+
+```py
+from django.shortcuts import render
+from django.views.generic import ListView, DetailView
+from .models import Post
+
+class BlogListView(ListView):
+    model = Post
+    template_name = 'blog/home.html'
+
+class BlogDetailView(DetailView):
+    model = Post
+    template_name = 'post_detail.html'
+```
+
+In this new view we define the model we’re using, `Post` , and the template we want
+it associated with, `post_detail.html` . By default **DetailView** will provide a
+**context object** we can use in our template called either **object** or the lowercase name of
+our model, **post** . Also, `DetailView` expects either a `primary key` or a `slug` passed to it
+as the **identifier**. More on this shortly.
+
+```html
+<!-- projects/templates/blog/post_detail.html -->
+{% extends 'blog/base.html' %} {% block content %}
+<div class="post-entry">
+  <h2>{{ post.title }}</h2>
+  <p>{{ post.body }}</p>
+</div>
+{% endblock content %}
+```
+
+At the top we specify that this template `inherits from base.html` . Then display the
+`title` and `body` from our `context object`, which DetailView makes accessible as **post** .
+
+Personally I found the naming of `context objects` in generic views extremely **confusing**
+when first learning Django. Because our `context object` from **DetailView** is either our
+model name `post` or `object` we could also update our template as follows and it would
+work exactly the same.
+
+```html
+<!-- projects/templates/blog/post_detail.html -->
+{% extends 'blog/base.html' %} {% block content %}
+<div class="post-entry">
+  <h2>{{ object.title }}</h2>
+  <p>{{ object.body }}</p>
+</div>
+{% endblock content %}
+```
+
+If you find using post or object confusing, we can also explicitly set the name of the
+context object in our view. So if we wanted to call it anything_you_want and then use
+that in the template, the code would look as follows and it would work the same.
+
+```py
+# blog/views.py
+
+....
+
+class BlogDetailView(DetailView):
+  model = Post
+  template_name = 'blog/post_detail.html'
+  context_object_name = 'anything_you_want'
+```
+
+Using `anything_you_want` as a context name for BlogDetailView Class
+
+```html
+<!-- projects/templates/blog/post_detail.html -->
+{% extends 'blog/base.html' %} {% block content %}
+<div class="post-entry">
+  <h2>{{ anything_you_want.title }}</h2>
+  <p>{{ anything_you_want.body }}</p>
+</div>
+{% endblock content %}
+```
+
+Ok, what’s next? How about adding a new **URLConf** for our view, which we can do as
+follows.
+
+**Note**:
+
+1. If you set `context_object_name` you cannot access data using `post`(lowercase model name) otherwise you can.
+2. You can always access data using `object`(as a context name)
+
+```py
+# blog/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.BlogListView.as_view(), name='home'),
+    path("post/<int:pk>/", views.BlogDetailView.as_view(), name='post_detail'),
+]
+```
+
+All blog post entries will start with `post/` . Next is the primary key for our post entry
+which will be represented as an integer `<int:pk>` . What’s the primary key you’re
+probably asking? `Django automatically adds an auto-incrementing primary key` to our
+database models. So while we only declared the fields `title` , `author` , and `body` on our
+Post model, under-the-hood Django also added another field called `id` , which is our
+primary key. We can access it as either `id` or `pk` .
+
+The pk for our first “Hello, World” post is 1. For the second post, it is 2. And so on.
+Therefore when we go to the individual entry page for our first post, we can expect
+that its urlpattern will be `post/`
+
+![images](images/blog-detail-post-2.png)
+
+To make our **life easier**, we should update the link on the homepage so we can directly
+access individual blog posts from there. Currently in `home.html` our link is empty:
+`<a href="">` . Update it to `<a href="{% url 'post_detail' post.pk %}">` .
+
+Or update it to `<a href="{% url 'post_detail' post.id %}">`
+
+> To confirm everything works, refresh the main page at http://127.0.0.1:8000/ and click on the title of each blog post to confirm the new links work.
+
+### Tests
+
+We need to test our model and views now. We want to ensure that the Post model
+works as expected, including its `str` representation. And we want to test both **ListView**
+and **DetailView** .
+
+```py
+from django.http import response
+from django.test import TestCase, Client
+from django.contrib.auth import get_user_model
+from django.urls import reverse
+
+from .models import Post
+
+
+class BlogTest(TestCase):
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username='testuser',
+            email='test@email.com',
+            password='secret',
+        )
+
+        self.post = Post.objects.create(
+            title='A good title',
+            body='Nice body content',
+            author=self.user
+        )
+
+    def test_string_representation(self):
+        post = Post(title='A sample title')
+        # print(post)
+        self.assertEqual(str(post), post.title)
+
+    def test_post_content(self):
+        # print(self.post)
+        self.assertEqual(f'{ self.post.title }', 'A good title')
+        self.assertEqual(f'{ self.post.author }', 'testuser')
+        self.assertEqual(f'{ self.post.body }', 'Nice body content')
+
+    def test_post_list_view(self):
+        response = self.client.get(reverse('home'))
+        # print(response)
+        self.assertEqual(response.status_code, 200)
+        # print(response.content)
+        self.assertContains(response, "A good title")
+        self.assertTemplateUsed('home')
+        self.assertTemplateNotUsed('post_detail')
+
+    def test_post_detail_view(self):
+        response = self.client.get('/post/1/')
+        print(response)
+        no_response = self.client.get("/post/1000/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(no_response.status_code, 404)
+        self.assertContains(response, 'A good title')
+        self.assertContains(response, "Nice body content")
+        self.assertTemplateUsed('post_detail')
+        # self.assertTemplateUsed('post_detail.html') # same as previous
+```
+
+There’s a lot that’s new in these tests so we’ll walk through them slowly. At the top
+we import **get_user_model** to reference our **active User**. We import which
+we’ve seen before and also **Client()** which is new and `used as a dummy Web browser`
+for simulating `GET` and `POST` requests on a `URL`. In other words, whenever you’re
+testing views you should use `Client()` .
+
+In our setUp method we add a sample blog post to test and then confirm that both its
+string representation and content are correct. Then we use test_post_list_view to
+confirm that our homepage returns a `200` HTTP status code, contains our body text,
+and uses the correct `home.html` template. Finally test_post_detail_view tests that our
+detail page works as expected and that an incorrect page returns a 404.
+`It’s always good to both test that something does exist and that something incorrect doesn’t exist in your tests.`
+Go ahead and run these tests now. They should all pass.
+
+```bash
+$ python manage.py runserver
+$ git init && git add --all && git commit -m 'blog app added'
 ```
