@@ -18,6 +18,7 @@ works with static files.
     - [Static Files](#static-files)
     - [Individual Blog Pages](#individual-blog-pages)
     - [Tests](#tests)
+    - [Deploy on Heroku](#deploy-on-heroku)
 
 ### Initial Setup
 
@@ -644,4 +645,51 @@ Go ahead and run these tests now. They should all pass.
 ```bash
 $ python manage.py runserver
 $ git init && git add --all && git commit -m 'blog app added'
+```
+
+### Deploy on Heroku
+
+```bash
+$ git status
+$ git init
+$ git add --all
+$ git commit -m 'added blog project all files for deploying in heroku'
+# install gunicorn
+$ pipenv install gunicorn
+$ pipenv lock
+# login onto heroku
+$ heroku login
+$ vim Procfile
+++++++++++++
+web: gunicorn blog_project.wsgi --log-file -
+..............
+$ vim blog_project/settings.py
+++++++++++++
+ALLOWED_HOST = ['*']
+............
+ $ vim blog_project/settings.py
+ $ pipenv install whitenoise
+#  https://devcenter.heroku.com/articles/django-assets
+
+$ vim blog_project/settings.py
+$ python manage.py check
+$ python manage.py test
+$ python manage.py runserver
+ 2031  vim blog_project/urls.py
+# from django.conf import settings
+# from django.conf.urls.static import static
+#  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+$ python manage.py check
+$ vim blog_project/urls.py
+$ python manage.py check
+$ python manage.py collectstatic
+$ python manage.py test
+$ heroku create
+$ heroku git:remote -a dry-woodland-82851
+$ heroku config:set DEBUG_COLLECTSTATIC=1
+$ heroku config:set DISABLE_COLLECTSTATIC=1
+$ git add --all
+$ git commit -m 'fix bug'
+$ git push heroku master
+$ heroku open
 ```
