@@ -1,0 +1,30 @@
+from django import test
+from django.http import response
+from django.test import TestCase
+from .models import Todo
+
+class TodoModelTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+        Todo.objects.create(title='first todo', body='a body here')
+    
+    def test_title_content(self):
+        todo = Todo.objects.get(id=1)
+        expected_object_name = f'{todo.title}'
+        self.assertEqual(expected_object_name, 'first todo')
+    
+    def test_body_content(self):
+        todo = Todo.objects.get(id=1)
+        expected_object_name  = f'{todo.body}'
+        self.assertEqual(expected_object_name, 'a body here')
+
+    def test_status_code(self):
+        response = self.client.get('/api/')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_content_of_todo(self):
+        response = self.client.get('/api/')
+        self.assertContains(response, 'a body here')
+        self.assertContains(response, 'first todo')
+        self.assertContains(response, '1')
