@@ -3,6 +3,13 @@ That's also works......................!
 Just run on your terminal,
 
 $ python 'Django - Hello.py' runserver # 'Django - Hello.py' is the filename
+
+# export unset printenv echo
+# export DEBUG=on
+# export ALLOWED_HOSTS=localhost, example.com
+# unset DEBUG
+# echo $DEBUG
+# printenv DEBUG
 """
 
 # settings.py
