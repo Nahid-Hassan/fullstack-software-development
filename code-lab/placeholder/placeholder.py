@@ -21,11 +21,11 @@ import os
 import sys
 from django.conf import settings
 from django.http import HttpResponse
-from django.conf.urls import url
 from django.urls import path
 from django.core.wsgi import get_wsgi_application
 from django import forms
 from PIL import Image, ImageDraw
+from django.core.cache import cache
 
 # ? os.environ.get('WANT_TO_FIND', ALT_TEXT)
 # DEBUG = os.environ.get('DEBUG', 'on') == 'on'
@@ -58,24 +58,30 @@ class ImageForm(forms.Form):
         """generate an image of the given type and return as row bytes."""
         height = self.cleaned_data['height']
         width = self.cleaned_data['width']
-        # Image.new(color mode, (height, width, optional))
-        image = Image.new('RGB', (height, width), 'purple')
-        draw = ImageDraw.Draw(image)
-        text = '{} x {}'.format(height, width)
-        textwidth, textheight = draw.textsize(text)
+        # key generate for cache
+        key = "{}.{}.{}".format(width, height, image_format)
+        content = cache.key(key)
+        print("----"*10)
+        print(content)
+        print("----"*10)
 
-        # if textwidth < width and textheight < height:
-        #     texttop = (height - textheight) // 2
-        #     textleft = (width - textwidth) // 2
-        #     draw.text((textleft, texttop), text, fill=(255, 255, 255))
+        if content is None:
+            image = Image.new('RGB', (width, height), 'purple')
+            draw = ImageDraw.Draw(image)
+            text = '{} x {}'.format(width, height)
+            textwidth, textheight = draw.textsize(text)
 
-        draw.text((textheight, textwidth), text=text, fill=(255, 255, 255))
-
-        print(height, width)
-        print(textheight, textwidth)
-        content = BytesIO()
-        image.save(content, image_format)
-        content.seek(0)
+            if textwidth < width and textheight < height:
+                texttop = (height - textheight) // 2
+                textleft = (width - textwidth) // 2
+                draw.text((textleft, texttop), text, fill=(255, 255, 255))
+            content = BytesIO()
+            print("+---+"*10)
+            print(content)
+            print("+---+"*10)
+            image.save(content, image_format)
+            content.seek(0)
+            cache.set(key, content, 60*60)
         return content
 
 
