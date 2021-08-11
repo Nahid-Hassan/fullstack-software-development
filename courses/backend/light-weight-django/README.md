@@ -4,10 +4,22 @@
 
 - [Light Weight Django](#light-weight-django)
   - [Table of Contents](#table-of-contents)
-    - [Hello World (Single file approach)](#hello-world-single-file-approach)
-    - [Hello World (Mutlifile Approach)](#hello-world-mutlifile-approach)
+  - [Chapter 1: The World Smallest Django Project](#chapter-1-the-world-smallest-django-project)
+    - [The World Smallest Django Project](#the-world-smallest-django-project)
+      - [Hello World (Single file approach)](#hello-world-single-file-approach)
+      - [Hello World (Mutlifile Approach)](#hello-world-mutlifile-approach)
+      - [Improvement(Local Server to Remote Server)](#improvementlocal-server-to-remote-server)
+      - [Additional Configuartion](#additional-configuartion)
+      - [Other important information](#other-important-information)
+  - [Chapter 2: Stateless Web Application](#chapter-2-stateless-web-application)
 
-### Hello World (Single file approach)
+---
+Chapter 1: The World Smallest Django Project
+---
+
+### The World Smallest Django Project
+
+#### Hello World (Single file approach)
 
 To create a simple `Hello World` project we need to create a **view** to serve the **root URL** and necessary **settings** to **configure** the Django **environment**.
 
@@ -80,7 +92,7 @@ Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
 
-### Hello World (Mutlifile Approach)
+#### Hello World (Mutlifile Approach)
 
 1. `views.py`
 
@@ -121,3 +133,78 @@ if __name__ == "__main__":
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')  # new
     execute_from_command_line(sys.argv)
 ```
+
+#### Improvement(Local Server to Remote Server)
+
+```bash
+nahid@cse ~$ pip install gunicorn
+```
+
+Add this two lines of code in your `manage.py` file or above the `manage.py portion`
+
+```py
+from django.core.wsgi import get_wsgi_application
+
+application = get_wsgi_application()
+
+def __name__ == '__main__':
+    # ... 
+```
+
+```bash
+nahid@cse ~$ gunicorn hello-world-single-file-approach --log-file=-
+
+[2021-08-11 13:03:26 +0600] [119309] [INFO] Starting gunicorn 20.1.0
+[2021-08-11 13:03:26 +0600] [119309] [INFO] Listening at: http://127.0.0.1:8000 (119309)
+[2021-08-11 13:03:26 +0600] [119309] [INFO] Using worker: sync
+[2021-08-11 13:03:26 +0600] [119326] [INFO] Booting worker with pid: 119326
+```
+
+#### Additional Configuartion
+
+While **Gunicorn** is a `production-ready web server`, the application itself is not yet pro‐
+duction ready, as **DEBUG** should never be enabled in production. As previously noted,
+the `SECRET_KEY` is also nonrandom and should be made random for additional security.
+
+```py
+import os
+
+# dictionary method
+DEBUG = os.environ.get("DEBUG", "on") == "on"
+SECRET_KEY = os.environ.get("SECRET_KEY", os.urandom(32))
+
+settings.configure(
+    DEBUG = DEBUG,
+    SECRET_KEY = SECRET_KEY,
+    # ........
+)
+```
+
+If **DEBUG** is false then we must sepcify the **ALLOWED_HOSTS=[]**. To doing this,
+
+```py
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+
+settings.configure(
+    # ........
+    ALLOWED_HOSTS = ALLOWED_HOSTS,
+    # ........
+)
+```
+
+#### Other important information
+
+Export environment variable in your system.
+
+```bash
+# exporting
+> export DEBUT=on
+> export SECRET_KEY = 'some secret key'
+
+# unset
+> unset DEBUG
+```
+
+----
+Chapter 2: Stateless Web Application
+----
