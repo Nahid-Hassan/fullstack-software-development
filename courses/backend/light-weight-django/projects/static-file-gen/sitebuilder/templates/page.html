@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {{ block.super }} - {{ slug | capfirst }}
+{% endblock title %}
+
+{% block content %}
+  {% include pages %}
+    <h1>Welcome To the Site</h1>
+    <p>Insert marketing copy here.</p>
+{% endblock content %}
